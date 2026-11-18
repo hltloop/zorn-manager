@@ -32,6 +32,7 @@ if [ "$update" -eq 0 ]; then
 {
 	linux.hostname your-hostname
 	
+	build.prefix /usr
 	build.compiler clang
 	build.cflags -O2 -march=native
 	build.jobs -j6
