@@ -48,6 +48,20 @@ if [ "$hostname" = 'linux.hostname' ] || [ "$(echo "$hostname" | awk '{printf NF
 	exit 1
 fi
 
+# build.prefix
+
+if [ "$(grep -c 'build.prefix' "$profile")" -ne 1 ]; then
+	printf "dagger-configure: ERROR: field 'build.prefix' not found or duplicated!\n"
+	exit 1
+fi
+
+prefix="$(grep "build.prefix" "$profile" | cut -d ' ' -f 2- | sed 's/^[[:blank:]]*//')"
+
+if [ "$prefix" = 'build.prefix' ] || [ "$(echo "$prefix" | awk '{printf NF}')" -ne 1 ] ; then
+	printf "dagger-configure: ERROR: invalid 'prefix' value\n"
+	exit 1
+fi
+
 # build.compiler
 
 if [ "$(grep -c 'build.compiler' "$profile")" -ne 1 ]; then
@@ -97,6 +111,7 @@ exports='/var/cache/dagger/exports.sh'
 
 : > "$exports"
 printf "HOSTNAME='%s'\n" "$hostname" >> "$exports"
+printf "PREFIX='%s'\n" "$prefix" >> "$exports"
 printf "COMPILER='%s'\n" "$compiler" >> "$exports"
 printf "CFLAGS='%s'\n" "$cflags" >> "$exports"
 printf "JOBS='%s'\n" "$jobs" >> "$exports"
