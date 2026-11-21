@@ -1,44 +1,86 @@
 #!/bin/sh
 
+readonly ETC='/etc/zorn'
+readonly CACHE='/var/cache/zorn'
+readonly LIBEXEC='/usr/libexec/zorn'
+
+readonly RECIPES_DIR='/usr/share/zorn/database'
+readonly INSTALLED_DIR='/var/lib/zorn/installed'
+
 update=${UPDATE:-0}
+
+# Checking for root
 
 if [ "$(id -u)" -ne 0 ]; then
 	printf 'install.sh: ERROR: this script requires root privileges\n'
 	exit 1
 fi
 
-if ! mkdir -p /var/cache/dagger; then
-	printf "install.sh: ERROR: failed to create '/var/cache/dagger'\n"
+# Preventing unexistent directories
+
+if ! mkdir -p $CACHE; then
+	printf "install.sh: ERROR: failed to create '%s'\n" "$CACHE"
 	exit 1
 fi
 
-if ! mkdir -p /etc/dagger; then
-	printf "install.sh: ERROR: failed to create '/etc/dagger'\n"
+if ! mkdir -p $ETC; then
+	printf "install.sh: ERROR: failed to create '%s'\n" "$ETC"
 	exit 1
 fi
 
-if ! install -m 755 dagger-configure.sh /usr/bin/dagger-configure; then
-	printf "install.sh: ERROR: failed to install 'dagger-configure'\n"
+if ! mkdir -p $LIBEXEC; then
+	printf "install.sh: ERROR: failed to create '%s'\n" "$LIB"
 	exit 1
 fi
 
-if ! install -m 755 dagger-forge.sh /usr/bin/dagger-forge; then
-	printf "install.sh: ERROR: failed to install 'dagger-forge'\n"
+if ! mkdir -p $RECIPES_DIR; then
+	printf "install.sh: ERROR: failed to create '%s'\n" "$LIB"
 	exit 1
 fi
+
+if ! mkdir -p $INSTALLED_DIR; then
+	printf "install.sh: ERROR: failed to create '%s'\n" "$LIB"
+	exit 1
+fi
+
+# Installating the commands
+
+if ! install -m 755 zorn.converge.sh /usr/bin/zorn.converge; then
+	printf "install.sh: ERROR: failed to install 'zorn.converge'\n"
+	exit 1
+fi
+
+if ! install -m 755 zorn.forge.sh $LIBEXEC/forge.sh; then
+	printf "install.sh: ERROR: failed to install '%s'\n" "$LIBEXEC/forge.sh"
+	exit 1
+fi
+
+# Base profile.zorn if desired
 
 if [ "$update" -eq 0 ]; then
-	cat > /etc/dagger/profile.dag <<EOF
+	cat > /etc/zorn/profile.zorn <<EOF
+main
 {
 	linux.hostname your-hostname
-	
+
 	build.prefix /usr
-	build.compiler clang
-	build.cflags -O2 -march=native
-	build.jobs -j6
+	
+	build.c.compiler clang
+	build.c.flags -O2 -march=native
+	
+	build.cxx.compiler clang++	
+	build.cxx.flags -O2 -march=native
+
+	build.jobs -j12
+	
+	system.packages
+	[
+		editors/vim CHECK
+		editors/nano NO-CHECK
+	]
 }
 EOF
-	printf "The installation is done! Don't forget to edit '/etc/dagger/profile.dag' :)\n"
+	printf "The installation is done! Don't forget to edit '/etc/zorn/profile.zorn' :)\n"
 else
-	printf "Sucessfully updated dagger!\n"
+	printf "Sucessfully updated zorn!\n"
 fi
