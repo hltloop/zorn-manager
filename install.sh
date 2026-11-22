@@ -76,7 +76,7 @@ main
 	build.cxx.compiler clang++	
 	build.cxx.flags -O2 -march=native
 
-	build.jobs -j12	
+	build.jobs 12	
 }
 EOF
 cat > /etc/zorn/packages.zorn <<EOF
