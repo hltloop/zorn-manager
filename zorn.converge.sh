@@ -148,7 +148,7 @@ parse_configuration() # {{{
 		argument=$(printf '%s\n' "$line" | cut -d ' ' -f2- | tr -d '\t')
 
 		case $command in
-			'main'|'{'|'}')
+			'main'|'{'|'}'|'')
 				;;
 			'linux.hostname'|'build.prefix'|'build.c.compiler'|'build.c.flags'|'build.cxx.compiler'|'build.cxx.flags'|'build.jobs')
 				;;
