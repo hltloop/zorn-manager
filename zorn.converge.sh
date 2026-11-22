@@ -161,6 +161,13 @@ parse_configuration() # {{{
 	done < "$PROFILE"
 } # }}}
 
+# $1 string
+
+escape_quote() # {{{
+{
+	printf '%s' "$1" | sed "s|'|'\\\\''|g"
+} # }}}
+
 check_and_save_configuration() # {{{
 {
 	check_field 'linux.hostname' hostname_found
@@ -173,13 +180,18 @@ check_and_save_configuration() # {{{
 
 	echo "$hostname" > /etc/hostname
 
+	if ! mkdir -p "$(dirname "$EXPORTS")"; then
+		printf "zorn.converge: failed to create '%s'\n" "$(dirname "$EXPORTS")"
+		exit 1
+	fi
+
 	cat <<EOF > "$EXPORTS"
-PREFIX='$prefix'
-CC='$c_compiler'
-CFLAGS='$c_flags'
-CXX='$cxx_compiler'
-CXXFLAGS='$cxx_flags'
-JOBS='$jobs'
+PREFIX='$(escape_quote "$prefix")'
+CC='$(escape_quote "$c_compiler")'
+CFLAGS='$(escape_quote "$c_flags")'
+CXX='$(escape_quote "$cxx_compiler")'
+CXXFLAGS='$(escape_quote "$cxx_flags")'
+JOBS='$(escape_quote "$jobs")'
 EOF
 } # }}}
 
