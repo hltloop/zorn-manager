@@ -240,8 +240,8 @@ install_packages() # {{{
 							esac
 						fi
 					fi
-				;;
 				done
+				;;
 		esac
 	done < $PROFILE
 } # }}}
