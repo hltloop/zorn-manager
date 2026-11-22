@@ -147,6 +147,16 @@ parse_configuration() # {{{
 		command=$(printf '%s\n' "$line" | cut -d ' ' -f1 | tr -d '\t')
 		argument=$(printf '%s\n' "$line" | cut -d ' ' -f2- | tr -d '\t')
 
+		case $command in
+			'main'|'{'|'}')
+				;;
+			'linux.hostname'|'build.prefix'|'build.c.compiler'|'build.c.flags'|'build.cxx.compiler'|'build.cxx.flags'|'build.jobs')
+				;;
+			*)
+				printf "zorn.converge: ERROR: %s: unrecognized field '%s'\n" "$line_number" "$command"
+				exit 1
+		esac
+
 		parse_field "linux.hostname" hostname hostname_found
 
 		parse_field "build.prefix" prefix prefix_found
