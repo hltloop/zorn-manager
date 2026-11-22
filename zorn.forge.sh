@@ -2,11 +2,11 @@
 
 # zorn.forge
 #
-# This script works along with 'zorn.converge' to install the packages declared
+# This script works along with 'zorn.packages' to install the packages declared
 # in 'system.packages'. Its function is read '/var/cache/zorn/exports.sh', run
-# the functions in the '/usr/share/zorn/database/<package>/build.sh' (e.g,
-# '/usr/share/zorn/database/editors/vim/build.sh') and them commit the files
-# from a DESTDIR to the real filesystem.
+# the scripts in the '/usr/share/zorn/database/<package>/' (e.g,
+# '/usr/share/zorn/database/editor/vim/') and them commit the files from a DESTDIR 
+# to the real filesystem.
 #
 # Copyright (C) 2026 Miguel Barbosa (hltloop)
 # This program is free software: you can redistribute it and/or modify
@@ -48,8 +48,14 @@ read_exports() # {{{
 	export PREFIX CC CFLAGS CXX CXXFLAGS JOBS
 } # }}}
 
+# $1 package
+# $2 overwrite
+# $3 attributes
+
 install_package() # {{{
 {
+	# Already installed
+	
 	if [ -e "$MANIFESTS/$1" ]; then
 		exit 0
 	fi
@@ -89,8 +95,8 @@ install_package() # {{{
 	# From now on we don't remove $tmp_dir for debugging
 	#
 	# Build
-
-	if ! sh "$DATABASE/$1/build.sh" build_package; then
+	
+	if ! ZORN_BUILD_ATTRIBUTES="$3" sh "$DATABASE/$1/build.sh" build_package ; then
 		printf "zorn.forge: ERROR: build for '$1' failed!\n"
 		exit 1
 	fi
@@ -136,7 +142,7 @@ main() # {{{
 {
 	check_root
 	read_exports
-	install_package $1 $2
+	install_package "$1" "$2" "$3"
 } # }}}
 
-main $@
+main "$@"
