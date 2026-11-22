@@ -185,7 +185,7 @@ check_and_save_configuration() # {{{
 		exit 1
 	fi
 
-	cat <<EOF > "$EXPORTS"
+	cat <<EOF > "$EXPORTS.tmp"
 PREFIX='$(escape_quote "$prefix")'
 CC='$(escape_quote "$c_compiler")'
 CFLAGS='$(escape_quote "$c_flags")'
@@ -193,6 +193,9 @@ CXX='$(escape_quote "$cxx_compiler")'
 CXXFLAGS='$(escape_quote "$cxx_flags")'
 JOBS='$(escape_quote "$jobs")'
 EOF
+
+	sync
+	mv "$EXPORTS.tmp" "$EXPORTS"
 } # }}}
 
 main() # {{{
