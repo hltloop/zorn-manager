@@ -155,6 +155,7 @@ parse_configuration() # {{{
 			*)
 				printf "zorn.converge: ERROR: %s: unrecognized field '%s'\n" "$line_number" "$command"
 				exit 1
+				;;
 		esac
 
 		parse_field "linux.hostname" hostname hostname_found
@@ -184,6 +185,7 @@ check_and_save_configuration() # {{{
 		''|*[!0-9]*|0)
 			printf "zorn.converge: ERROR: invalid 'build.jobs' value\n"
 			exit 1
+			;;
 	esac
 
 	case $prefix in
@@ -192,6 +194,7 @@ check_and_save_configuration() # {{{
 		*)
 			printf "zorn.converge: ERROR: 'build.prefix' must be an absolute path\n"
 			exit 1
+			;;
 	esac
 
 	case $hostname in
