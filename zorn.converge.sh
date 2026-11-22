@@ -186,6 +186,14 @@ check_and_save_configuration() # {{{
 			exit 1
 	esac
 
+	case $prefix in
+		'/'*)
+			;;
+		*)
+			printf "zorn.converge: ERROR: 'build.prefix' must be an absolute path\n"
+			exit 1
+	esac
+
 	check_field 'linux.hostname' hostname_found
 	check_field 'build.prefix' prefix_found
 	check_field 'build.c.compiler' c_compiler_found
