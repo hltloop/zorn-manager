@@ -194,6 +194,13 @@ check_and_save_configuration() # {{{
 			exit 1
 	esac
 
+	case $hostname in
+		'-'*|''|*[!a-zA-Z0-9-]*)
+			printf "zorn.converge: ERROR: invalid 'linux.hostname' value\n"
+			exit 1
+			;;
+	esac
+
 	check_field 'linux.hostname' hostname_found
 	check_field 'build.prefix' prefix_found
 	check_field 'build.c.compiler' c_compiler_found
