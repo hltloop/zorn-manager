@@ -19,14 +19,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+set -u
+
 # Configuration
 
 readonly PROFILE='/etc/zorn/profile.zorn'
-readonly PACKAGES='/etc/zorn/packages.zorn'
 readonly EXPORTS='/var/cache/zorn/exports.sh'
-
-readonly INSTALL_COMMAND='/usr/libexec/zorn/forge.sh'
-readonly MANIFESTS='/var/lib/zorn/installed'
 
 # State flags
 
@@ -56,7 +54,7 @@ jobs=''
 
 check_profile() # {{{
 {
-	if [ ! -e $PROFILE ]; then
+	if [ ! -e "$PROFILE" ]; then
 		printf "zorn.converge: ERROR: '%s' not found\n" "$PROFILE"
 		exit 1
 	fi
@@ -78,15 +76,15 @@ parse_field() # {{{
 {
 	case $command in
 		"$1")
-			if [ $inside_braces -eq 0 ]; then
-				printf "zorn.converge: ERROR: field '$1' outside braces\n"
+			if [ "$inside_braces" -eq 0 ]; then
+				printf "zorn.converge: ERROR: field '%s' outside braces\n" "$1"
 				exit 1
 			fi
 
 			eval "field_found=\$$3"
 
-			if [ $field_found -eq 1 ]; then
-				printf "zorn.converge: ERROR: duplicated '$1' at line %s\n" $line_number
+			if [ "$field_found" -eq 1 ]; then
+				printf "zorn.converge: ERROR: %s: duplicated '%s'\n" "$line_number" "$1"
 				exit 1
 			fi
 
@@ -102,17 +100,17 @@ parse_field() # {{{
 check_field() # {{{
 {
 	eval field_found="\$$2"
-	if [ $field_found -eq 0 ]; then
-		printf "zorn.converge: ERROR: missing '$1' field\n"
+	if [ "$field_found" -eq 0 ]; then
+		printf "zorn.converge: ERROR: missing '%s' field\n" "$1"
 		exit 1
 	fi
 } # }}}
 
 parse_configuration() # {{{
 {
-	first_line="$(head -1 $PROFILE)"
-	second_line="$(sed -n '2p' $PROFILE)"
-	last_line="$(tail -1 $PROFILE)"
+	first_line="$(head -1 "$PROFILE")"
+	second_line="$(sed -n '2p' "$PROFILE")"
+	last_line="$(tail -1 "$PROFILE")"
 
 	if [ "$first_line" != 'main' ]; then
 		printf "zorn.converge: ERROR: 1: expected 'main' but got '%s'\n" "$first_line"
@@ -125,7 +123,7 @@ parse_configuration() # {{{
 	fi
 
 	if [ "$last_line" != '}' ]; then
-		printf "zorn.converge: ERROR: $(wc -l < $PROFILE): expected '}' but got '%s'\n" "$last_line"
+		printf "zorn.converge: ERROR: %s: expected '}' but got '%s'\n" "$(wc -l < "$PROFILE")" "$last_line"
 		exit 1
 	fi
 	
@@ -160,7 +158,7 @@ parse_configuration() # {{{
 		parse_field "build.cxx.flags" cxx_flags cxx_flags_found
 
 		parse_field "build.jobs" jobs jobs_found
-	done < $PROFILE
+	done < "$PROFILE"
 } # }}}
 
 check_and_save_configuration() # {{{
@@ -175,7 +173,7 @@ check_and_save_configuration() # {{{
 
 	echo "$hostname" > /etc/hostname
 
-	cat <<EOF > $EXPORTS
+	cat <<EOF > "$EXPORTS"
 PREFIX='$prefix'
 CC='$c_compiler'
 CFLAGS='$c_flags'
