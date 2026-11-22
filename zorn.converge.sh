@@ -166,7 +166,7 @@ parse_configuration() # {{{
 
 		parse_field "build.cxx.compiler" cxx_compiler cxx_compiler_found
 		parse_field "build.cxx.flags" cxx_flags cxx_flags_found
-
+		
 		parse_field "build.jobs" jobs jobs_found
 	done < "$PROFILE"
 } # }}}
@@ -180,6 +180,12 @@ escape_quote() # {{{
 
 check_and_save_configuration() # {{{
 {
+	case $jobs in
+		''|*[!0-9]*|0)
+			printf "zorn.converge: ERROR: invalid 'build.jobs' value\n"
+			exit 1
+	esac
+
 	check_field 'linux.hostname' hostname_found
 	check_field 'build.prefix' prefix_found
 	check_field 'build.c.compiler' c_compiler_found
