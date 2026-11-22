@@ -2,10 +2,8 @@
 
 # zorn.converge
 #
-# This script is the main core of zorn-manager, its function is read
-# '/etc/zorn/profile.zorn', parse it and validate the configuration, save
-# to '/var/cache/zorn/exports.sh' and then install the packages
-# declared in field 'system.packages' using '/usr/libexec/zorn/forge.sh'.
+# This script reads '/etc/zorn/profile.zorn', parse it, validate the 
+# configuration, and then save to '/var/cache/zorn/exports.sh'.
 #
 # Copyright (C) 2026 Miguel Barbosa (hltloop)
 # This program is free software: you can redistribute it and/or modify
@@ -24,8 +22,11 @@
 # Configuration
 
 readonly PROFILE='/etc/zorn/profile.zorn'
+readonly PACKAGES='/etc/zorn/packages.zorn'
 readonly EXPORTS='/var/cache/zorn/exports.sh'
+
 readonly INSTALL_COMMAND='/usr/libexec/zorn/forge.sh'
+readonly MANIFESTS='/var/lib/zorn/installed'
 
 # State flags
 
@@ -64,7 +65,7 @@ check_profile() # {{{
 check_root() # {{{
 {
 	if [ "$(id -u)" -ne 0 ]; then
-		printf "zorn.converge: ERROR: this command must be ran with root privileges\n"
+		printf "zorn.converge: ERROR: this command must be run with root privileges\n"
 		exit 1
 	fi
 } # }}}
@@ -76,7 +77,7 @@ check_root() # {{{
 parse_field() # {{{
 {
 	case $command in
-		$1)
+		"$1")
 			if [ $inside_braces -eq 0 ]; then
 				printf "zorn.converge: ERROR: field '$1' outside braces\n"
 				exit 1
@@ -109,33 +110,33 @@ check_field() # {{{
 
 parse_configuration() # {{{
 {
+	first_line="$(head -1 $PROFILE)"
+	second_line="$(sed -n '2p' $PROFILE)"
+	last_line="$(tail -1 $PROFILE)"
+
+	if [ "$first_line" != 'main' ]; then
+		printf "zorn.converge: ERROR: 1: expected 'main' but got '%s'\n" "$first_line"
+		exit 1
+	fi
+
+	if [ "$second_line" != '{' ]; then
+		printf "zorn.converge: ERROR: 2: expected '{' but got '%s'\n" "$second_line"
+		exit 1
+	fi
+
+	if [ "$last_line" != '}' ]; then
+		printf "zorn.converge: ERROR: $(wc -l < $PROFILE): expected '}' but got '%s'\n" "$last_line"
+		exit 1
+	fi
+	
 	while IFS= read -r line; do
 		line_number=$((line_number+1))
-
-		first_line="$(head -1 $PROFILE)"
-		second_line="$(sed -n '2p' $PROFILE)"
-		last_line="$(tail -1 $PROFILE)"
-
-		if [ "$first_line" != 'main' ]; then
-			printf "zorn.converge: ERROR: line 1 must be 'main'\n"
-			exit 1
-		fi
-
-		if [ "$second_line" != '{' ]; then
-			printf "zorn.converge: ERROR: line 2 must be '{'\n"
-			exit 1
-		fi
 
 		case $line in
 			'{')
 				inside_braces=1
 				;;
 		esac
-
-		if [ "$last_line" != '}' ]; then
-			printf "zorn.converge: ERROR: line $(wc -l $PROFILE) must be '}'\n"
-			exit 1
-		fi
 
 		case $line in
 			'}')
@@ -184,77 +185,14 @@ JOBS='$jobs'
 EOF
 } # }}}
 
-# The packages must be installed after updating the system
-
-install_packages() # {{{
-{
-	line_number=0
-
-	while IFS= read -r line; do
-		line_number=$((line_number+1))
-
-		command=$(printf '%s\n' "$line" | cut -d ' ' -f1 | tr -d '\t')
-		argument=$(printf '%s\n' "$line" | cut -d ' ' -f2- | tr -d '\t')
-
-		case $command in
-			'system.packages')
-				next_line=$((line_number+1))
-				content=$(sed -n "${next_line}p" $PROFILE | tr -d '\t')
-
-				if [ "$content" != '[' ]; then
-					printf "zorn.converge: ERROR: 'system.packages' next line must be '['\n"
-					exit 1
-				fi
-
-				while [ "$content" != ']' ]; do
-					next_line="$((next_line+1))"
-					total_lines="$(wc -l < $PROFILE)"
-
-					content=$(sed -n "${next_line}p" $PROFILE | tr -d '\t')
-
-					if [ "$next_line" -ge "$total_lines" ]; then
-						printf "zorn.converge: ERROR: '[' not closed\n"
-						exit 1
-					fi
-
-					if [ "$content" != ']' ]; then
-						package="$(echo $content | cut -d ' ' -f1)"
-						argument="$(echo $content | cut -d ' ' -f2)"
-						extra="$(echo $content | cut -d ' ' -f3-)"
-
-						if [ -n "$extra" ]; then
-							printf 'zorn.converge: ERROR: invalid package argument\n'
-						fi
-
-						if [ "$argument" = "$package" ]; then
-							$INSTALL_COMMAND "$package" 0
-						else
-							case $argument in
-								OVERWRITE)
-									$INSTALL_COMMAND "$package" 1
-									;;
-								*)
-									printf 'zorn.converge: ERROR: invalid package argument\n'
-									exit 1
-									;;
-							esac
-						fi
-					fi
-				done
-				;;
-		esac
-	done < $PROFILE
-} # }}}
-
 main() # {{{
 {
 	check_profile
 	check_root
 	parse_configuration
 	check_and_save_configuration
-	install_packages
-
-	printf "zorn.converge: sucessfully converged your system\n"
+	
+	printf "zorn.converge: successfully converged your system\n"
 } # }}}
 
 main

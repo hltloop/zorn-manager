@@ -50,6 +50,11 @@ if ! install -m 755 zorn.converge.sh /usr/bin/zorn.converge; then
 	exit 1
 fi
 
+if ! install -m 755 zorn.packages.sh /usr/bin/zorn.packages; then
+	printf "install.sh: ERROR: failed to install 'zorn.converge'\n"
+	exit 1
+fi
+
 if ! install -m 755 zorn.forge.sh $LIBEXEC/forge.sh; then
 	printf "install.sh: ERROR: failed to install '%s'\n" "$LIBEXEC/forge.sh"
 	exit 1
@@ -71,16 +76,21 @@ main
 	build.cxx.compiler clang++	
 	build.cxx.flags -O2 -march=native
 
-	build.jobs -j12
-	
-	system.packages
-	[
-		editors/vim CHECK
-		editors/nano NO-CHECK
-	]
+	build.jobs -j12	
 }
 EOF
-	printf "The installation is done! Don't forget to edit '/etc/zorn/profile.zorn' :)\n"
+cat > /etc/zorn/packages.zorn <<EOF
+packages
+{
+	package editor/vim
+		build.attributes ncurses
+		install.overwrite yes
+
+	package lib/libxa
+		install.overwrite no
+}
+EOF
+	printf "The installation is done! Don't forget to edit '/etc/zorn/profile.zorn' and '/etc/zorn/packages.zorn':)\n"
 else
 	printf "Sucessfully updated zorn!\n"
 fi
