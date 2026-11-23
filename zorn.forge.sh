@@ -127,7 +127,6 @@ install_package() # {{{
 
 	while IFS= read -r destdir_file; do
 		filesystem_file="${destdir_file#"$DESTDIR"}"
-		filesystem_folder="${filesystem_file%/*}"
 
 		if ! printf '%s\n' "$filesystem_file" >> "$MANIFESTS/$1/manifest"; then
 			printf "zorn.forge: FATAL: failed to append '%s' to '%s' manifest, system may be unstable!\n" "$filesystem_file" "$1"
