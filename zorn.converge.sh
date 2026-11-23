@@ -204,6 +204,16 @@ check_and_save_configuration() # {{{
 			;;
 	esac
 
+	if ! command -v "$c_compiler" >/dev/null 2>&1; then
+		printf "zorn.converge: ERROR: invalid 'build.c.compiler' value\n"
+		exit 1
+	fi
+
+	if ! command -v "$cxx_compiler" >/dev/null 2>&1; then
+		printf "zorn.converge: ERROR: invalid 'build.cxx.compiler' value\n"
+		exit 1
+	fi
+
 	check_field 'linux.hostname' hostname_found
 	check_field 'build.prefix' prefix_found
 	check_field 'build.c.compiler' c_compiler_found
