@@ -80,27 +80,27 @@ install_package() # {{{
 
 parse_packages() # {{{
 {
+	first_line="$(head -1 "$PACKAGES")"
+	second_line="$(sed -n '2p' "$PACKAGES")"
+	last_line="$(tail -1 "$PACKAGES")"
+
+	if [ "$first_line" != 'packages' ]; then
+		printf "zorn.converge: ERROR: 1: expected 'packages' but got '%s'\n" "$first_line"
+		exit 1
+	fi
+
+	if [ "$second_line" != '{' ]; then
+		printf "zorn.converge: ERROR: 2: expected '{' but got '%s'\n" "$second_line"
+		exit 1
+	fi
+
+	if [ "$last_line" != '}' ]; then
+		printf "zorn.converge: ERROR: %s: expected '}' but got '%s'\n" "$(wc -l "$PACKAGES")" "$last_line"
+		exit 1
+	fi
+
 	while IFS= read -r line; do
 		line_number=$((line_number+1))
-
-		first_line="$(head -1 "$PACKAGES")"
-		second_line="$(sed -n '2p' "$PACKAGES")"
-		last_line="$(tail -1 "$PACKAGES")"
-
-		if [ "$first_line" != 'packages' ]; then
-			printf "zorn.converge: ERROR: 1: expected 'packages' but got '%s'\n" "$first_line"
-			exit 1
-		fi
-
-		if [ "$second_line" != '{' ]; then
-			printf "zorn.converge: ERROR: 2: expected '{' but got '%s'\n" "$second_line"
-			exit 1
-		fi
-
-		if [ "$last_line" != '}' ]; then
-			printf "zorn.converge: ERROR: %s: expected '}' but got '%s'\n" "$(wc -l "$PACKAGES")" "$last_line"
-			exit 1
-		fi
 
 		function=$(echo "$line" | cut -d ' ' -f 1)
 		argument=$(echo "$line" | cut -d ' ' -f 2-)
