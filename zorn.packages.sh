@@ -99,12 +99,12 @@ parse_packages() # {{{
 		exit 1
 	fi
 
-	while IFS= read -r line; do
+	while read -r line; do
 		line_number=$((line_number+1))
 
 		function=$(echo "$line" | cut -d ' ' -f 1)
 		argument=$(echo "$line" | cut -d ' ' -f 2-)
-	
+
 		case $function in
 			'packages'|'{'|'}'|'')
 				continue
