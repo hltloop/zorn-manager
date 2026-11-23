@@ -37,7 +37,7 @@ package_overwrite=
 
 check_packages() # {{{
 {
-	if [ ! -e $PACKAGES ]; then
+	if [ ! -e "$PACKAGES" ]; then
 		printf "zorn.packages: ERROR: '%s' not found\n" "$PACKAGES"
 		exit 1
 	fi
