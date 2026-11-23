@@ -70,9 +70,9 @@ install_package() # {{{
 	# Temporary directory
 
 	tmp_dir="$(mktemp -d)"
-	cd $tmp_dir
+	cd "$tmp_dir" || exit 1
 
-	export DESTDIR="$(mktemp -d $tmp_dir/destdir.XXXXXX)"
+	export DESTDIR="$(mktemp -d "$tmp_dir"/destdir.XXXXXX)"
 
 	# Parameters
 
@@ -80,15 +80,15 @@ install_package() # {{{
 
 	# Fetching
 	if ! sh "$DATABASE/$1/build.sh" fetch_sources; then
-		printf "zorn.forge: ERROR: fetch_sources for '$1' failed!\n"
-		rm -rf $tmp_dir
+		printf "zorn.forge: ERROR: fetch_sources for '%s' failed!\n" "$1"
+		rm -rf "$tmp_dir"
 		exit 1
 	fi
 
 	# Prepare
 	if ! sh "$DATABASE/$1/build.sh" prepare_build; then
-		printf "zorn.forge: ERROR: prepare_build for '$1' failed!\n"
-		rm -rf $tmp_dir
+		printf "zorn.forge: ERROR: prepare_build for '%s' failed!\n" "$1"
+		rm -rf "$tmp_dir"
 		exit 1
 	fi
 
@@ -97,14 +97,14 @@ install_package() # {{{
 	# Build
 	
 	if ! ZORN_BUILD_ATTRIBUTES="$3" sh "$DATABASE/$1/build.sh" build_package ; then
-		printf "zorn.forge: ERROR: build for '$1' failed!\n"
+		printf "zorn.forge: ERROR: build for '%s' failed!\n" "$1"
 		exit 1
 	fi
 
 	# Install on the destdir
 
 	if ! sh "$DATABASE/$1/build.sh" install_package; then
-		printf "zorn.forge: ERROR: install for '$1' failed!\n"
+		printf "zorn.forge: ERROR: install for '%s' failed!\n" "$1"
 		exit 1
 	fi
 
