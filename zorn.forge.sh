@@ -59,6 +59,7 @@ install_package() # {{{
 	# Already installed
 	
 	if [ -e "$MANIFESTS/$1" ]; then
+		printf "zorn.forge: '%s' is already installed\n" "$1"
 		exit 0
 	fi
 
@@ -102,14 +103,14 @@ install_package() # {{{
 	# Build
 	
 	if ! ZORN_BUILD_ATTRIBUTES="$3" sh "$DATABASE/$1/build.sh" build_package ; then
-		printf "zorn.forge: ERROR: build for '%s' failed!\n" "$1"
+		printf "zorn.forge: ERROR: build for '%s' failed!\n temporary directory wasn't removed for debugging: '%s'\n" "$1" "$tmp_dir"
 		exit 1
 	fi
 
 	# Install on the destdir
 
 	if ! sh "$DATABASE/$1/build.sh" install_package; then
-		printf "zorn.forge: ERROR: install for '%s' failed!\n" "$1"
+		printf "zorn.forge: ERROR: install for '%s' failed!\n temporary directory wasn't removed for debugging: '%s'\n" "$1" "$tmp_dir"
 		exit 1
 	fi
 
