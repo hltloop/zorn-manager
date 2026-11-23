@@ -85,17 +85,17 @@ parse_packages() # {{{
 	last_line="$(tail -1 "$PACKAGES")"
 
 	if [ "$first_line" != 'packages' ]; then
-		printf "zorn.converge: ERROR: 1: expected 'packages' but got '%s'\n" "$first_line"
+		printf "zorn.packages: ERROR: 1: expected 'packages' but got '%s'\n" "$first_line"
 		exit 1
 	fi
 
 	if [ "$second_line" != '{' ]; then
-		printf "zorn.converge: ERROR: 2: expected '{' but got '%s'\n" "$second_line"
+		printf "zorn.packages: ERROR: 2: expected '{' but got '%s'\n" "$second_line"
 		exit 1
 	fi
 
 	if [ "$last_line" != '}' ]; then
-		printf "zorn.converge: ERROR: %s: expected '}' but got '%s'\n" "$(wc -l "$PACKAGES")" "$last_line"
+		printf "zorn.packages: ERROR: %s: expected '}' but got '%s'\n" "$(wc -l "$PACKAGES")" "$last_line"
 		exit 1
 	fi
 
