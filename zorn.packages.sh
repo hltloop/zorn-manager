@@ -22,7 +22,6 @@
 # Configuration
 
 readonly PACKAGES='/etc/zorn/packages.zorn'
-readonly EXPORTS='/var/cache/zorn/exports.sh'
 
 readonly INSTALL_COMMAND='/usr/libexec/zorn/forge.sh'
 
