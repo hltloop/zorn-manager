@@ -74,7 +74,10 @@ install_package() # {{{
 	tmp_dir="$(mktemp -d)"
 	cd "$tmp_dir" || exit 1
 
-	export DESTDIR="$(mktemp -d "$tmp_dir"/destdir.XXXXXX)"
+	if ! DESTDIR="$(mktemp -d "$tmp_dir"/destdir.XXXXXX)"; then
+		printf "zorn.forge: ERROR: failed to create DESTDIR for '%s'\n" "$1"
+	fi
+	export DESTDIR
 
 	# Parameters
 
