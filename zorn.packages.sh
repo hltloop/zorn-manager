@@ -75,6 +75,7 @@ install_package() # {{{
 	*)
 		printf "zorn.packages: ERROR: %s: 'install.overwrite' only arguments must be 'yes' or 'no'\n" "$line_number"
 		exit 1
+		;;	
 	esac
 } # }}}
 
