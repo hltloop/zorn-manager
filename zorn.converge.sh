@@ -223,6 +223,10 @@ check_and_save_configuration() # {{{
 	check_field 'build.jobs' jobs_found
 
 	echo "$hostname" > /etc/hostname
+	if ! hostname "$hostname"; then
+		printf "zorn.converge: failed to set hostname\n"
+		exit 1
+	fi
 
 	if ! mkdir -p "$(dirname "$EXPORTS")"; then
 		printf "zorn.converge: failed to create '%s'\n" "$(dirname "$EXPORTS")"
