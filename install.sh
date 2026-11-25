@@ -30,16 +30,21 @@ if ! mkdir -p $ETC; then
 fi
 
 if ! mkdir -p $LIBEXEC; then
-	printf "install.sh: ERROR: failed to create '%s'\n" "$LIB"
+	printf "install.sh: ERROR: failed to create '%s'\n" "$LIBEXEC"
 	exit 1
 fi
 
 if ! mkdir -p $RECIPES_DIR; then
-	printf "install.sh: ERROR: failed to create '%s'\n" "$LIB"
+	printf "install.sh: ERROR: failed to create '%s'\n" "$RECIPES_DIR"
 	exit 1
 fi
 
 if ! mkdir -p $INSTALLED_DIR; then
+	printf "install.sh: ERROR: failed to create '%s'\n" "$INSTALLED_DIR"
+	exit 1
+fi
+
+if ! mkdir -p $LIB; then
 	printf "install.sh: ERROR: failed to create '%s'\n" "$LIB"
 	exit 1
 fi
@@ -52,12 +57,29 @@ if ! install -m 755 zorn.converge.sh /usr/bin/zorn.converge; then
 fi
 
 if ! install -m 755 zorn.packages.sh /usr/bin/zorn.packages; then
-	printf "install.sh: ERROR: failed to install 'zorn.converge'\n"
+	printf "install.sh: ERROR: failed to install 'zorn.packages'\n"
 	exit 1
 fi
 
 if ! install -m 755 zorn.forge.sh $LIBEXEC/forge.sh; then
 	printf "install.sh: ERROR: failed to install '%s'\n" "$LIBEXEC/forge.sh"
+	exit 1
+fi
+
+if ! install -m 755 zorn.purge.sh /usr/bin/zorn.purge; then
+	printf "install.sh: ERROR: failed to install 'zorn.purge'\n"
+	exit 1
+fi
+
+if ! install -m 755 zorn.info.sh /usr/bin/zorn.info; then
+	printf "install.sh: ERROR: failed to install 'zorn.info'\n"
+	exit 1
+fi
+
+# Installing lib.sh
+
+if ! install -m 755 lib.sh "$LIB/lib.sh"; then
+	printf "install.sh: ERROR: failed to install 'lib.sh'\n"
 	exit 1
 fi
 
