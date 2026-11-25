@@ -90,9 +90,15 @@ main() # {{{
 		printf '	%savailable%s: %s\n' "$CYAN" "$RESET" "$BUILD_ATTRIBUTES"
 
 		if [ "$status" = 'installed' ]; then
-			printf '	%senabled%s: %s\n' "$GREEN" "$RESET" "$(cat $BUILD_INFO/$package/build_attributes)"
+			package_attributes="$(cat $BUILD_INFO/$package/build_attributes)"
+			if [ -n "$package_attributes" ]; then
+				printf '	%senabled%s: %s\n' "$GREEN" "$RESET" "$package_attributes"
+			else
+				printf '	%senabled%s: none\n' "$GREEN" "$RESET"
+			fi
 			printf 'build date: %s\n' "$(cat $BUILD_INFO/$package/date)"
 		else
+
 			printf '	%senabled%s: none\n' "$GREEN" "$RESET"
 		fi
 
