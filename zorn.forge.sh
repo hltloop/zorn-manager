@@ -29,14 +29,11 @@ set -u
 readonly EXPORTS='/var/cache/zorn/exports.sh'
 readonly DATABASE='/usr/share/zorn/database'
 readonly MANIFESTS='/var/lib/zorn/installed'
+readonly LIB='/usr/lib/zorn/lib.sh'
 
-check_root() # {{{
-{
-	if [ "$(id -u)" -ne 0 ]; then
-		printf "zorn.forge: ERROR: this command must be ran with root privileges\n"
-		exit 1
-	fi
-} # }}}
+# Source lib
+
+. "$LIB"
 
 read_exports() # {{{
 {

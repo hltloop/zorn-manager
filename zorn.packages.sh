@@ -22,8 +22,12 @@
 # Configuration
 
 readonly PACKAGES='/etc/zorn/packages.zorn'
-
 readonly INSTALL_COMMAND='/usr/libexec/zorn/forge.sh'
+readonly LIB='/usr/lib/zorn/lib.sh'
+
+# Source lib.sh
+
+. "$LIB"
 
 # Counters
 
@@ -39,14 +43,6 @@ check_packages() # {{{
 {
 	if [ ! -e "$PACKAGES" ]; then
 		printf "zorn.packages: ERROR: '%s' not found\n" "$PACKAGES"
-		exit 1
-	fi
-} # }}}
-
-check_root() # {{{
-{
-	if [ "$(id -u)" -ne 0 ]; then
-		printf 'zorn.packages: ERROR: this command must be ran with root privileges\n'
 		exit 1
 	fi
 } # }}}

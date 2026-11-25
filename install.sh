@@ -3,6 +3,7 @@
 readonly ETC='/etc/zorn'
 readonly CACHE='/var/cache/zorn'
 readonly LIBEXEC='/usr/libexec/zorn'
+readonly LIB='/usr/lib/zorn/'
 
 readonly RECIPES_DIR='/usr/share/zorn/database'
 readonly INSTALLED_DIR='/var/lib/zorn/installed'

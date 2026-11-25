@@ -25,6 +25,11 @@ set -u
 
 readonly PROFILE='/etc/zorn/profile.zorn'
 readonly EXPORTS='/var/cache/zorn/exports.sh'
+readonly LIB='/usr/lib/zorn/lib.sh'
+
+# Source lib.sh
+
+. "$LIB"
 
 # State flags
 
@@ -56,14 +61,6 @@ check_profile() # {{{
 {
 	if [ ! -e "$PROFILE" ]; then
 		printf "zorn.converge: ERROR: '%s' not found\n" "$PROFILE"
-		exit 1
-	fi
-} # }}}
-
-check_root() # {{{
-{
-	if [ "$(id -u)" -ne 0 ]; then
-		printf "zorn.converge: ERROR: this command must be run with root privileges\n"
 		exit 1
 	fi
 } # }}}
