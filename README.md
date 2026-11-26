@@ -6,7 +6,7 @@ zorn-manager is a minimal declarative package manager written in POSIX shell.
 
 ## Dependencies
 
-zorn-manager only depends on busybox/binutils and a POSIX compatible shell.
+zorn-manager only depends on busybox or GNU Coreutils and a POSIX compatible shell.
 
 ## Installation and updating
 
